@@ -1,0 +1,5 @@
+//실행
+yarn dev
+
+//컴파일
+yarn tsc

@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.19.0",
+    "@langchain/anthropic": "^0.1.8",
+    "dotenv": "^16.4.5",
+    "langchain": "^0.1.29",
+    "typescript": "^5.4.3"
+  },
+  "name": "Anthropic_type_script",
+  "version": "1.0.0",
+  "description": "My first Anthropic",
+  "main": "src/app.ts",
+  "repository": "https://github.com/jasonkorea/Anthropic.git",
+  "author": "Jason",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^20.11.30",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node ./src/app.ts"
+  },
+  "packageManager": "yarn@4.1.1",
+  "devDepencies": {
+    "@types/node": "^20.11.30"
+  }
+}
