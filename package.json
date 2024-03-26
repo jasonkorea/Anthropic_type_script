@@ -20,7 +20,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node ./src/app.ts"
+    "dev": "ts-node ./src/app.ts",
+    "async": "ts-node ./src/async.ts",
+    "stream": "ts-node ./src/stream.ts"
+
   },
   "packageManager": "yarn@4.1.1",
   "devDepencies": {

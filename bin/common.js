@@ -32,53 +32,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createChain = exports.createModel = exports.rl = exports.ANTHROPIC_API_KEY = void 0;
+// common.ts
 const dotenv = __importStar(require("dotenv"));
 const claude_configurations_1 = require("./claude_configurations");
 const anthropic_1 = require("@langchain/anthropic");
 const chains_1 = require("langchain/chains");
 const readline = __importStar(require("readline"));
-const ANTHROPIC_API_KEY = process.env['ANTHROPIC_API_KEY'];
+exports.ANTHROPIC_API_KEY = process.env['ANTHROPIC_API_KEY'];
 dotenv.config();
-const rl = readline.createInterface({
+exports.rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
-function main() {
+function createModel() {
     return __awaiter(this, void 0, void 0, function* () {
-        const model = new anthropic_1.ChatAnthropic({
+        return new anthropic_1.ChatAnthropic({
             temperature: claude_configurations_1.Configurations.temperature,
             modelName: "claude-3-opus-20240229",
-            anthropicApiKey: ANTHROPIC_API_KEY,
+            anthropicApiKey: exports.ANTHROPIC_API_KEY,
             maxTokens: claude_configurations_1.Configurations.maxTokens,
-            streaming: true, // 스트리밍 옵션 추가
         });
-        const chain = new chains_1.ConversationChain({ llm: model });
-        function promptUser() {
-            return __awaiter(this, void 0, void 0, function* () {
-                rl.question('User: ', (input) => __awaiter(this, void 0, void 0, function* () {
-                    if (input.toLowerCase() === 'exit') {
-                        rl.close();
-                        return;
-                    }
-                    console.log('Assistant:');
-                    let isFirstToken = true;
-                    const response = yield chain.call({ input }, [
-                        {
-                            handleLLMNewToken(token) {
-                                if (isFirstToken) {
-                                    isFirstToken = false;
-                                }
-                                process.stdout.write(token); // 스트리밍된 토큰을 실시간으로 출력
-                            },
-                        },
-                    ]);
-                    console.log('\n');
-                    promptUser();
-                }));
-            });
-        }
-        console.log('대화를 시작합니다. 종료하려면 "exit"을 입력하세요.');
-        promptUser();
     });
 }
-main();
+exports.createModel = createModel;
+function createChain(model) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new chains_1.ConversationChain({ llm: model });
+    });
+}
+exports.createChain = createChain;
