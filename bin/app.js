@@ -31,28 +31,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const history_1 = require("./history");
+const claude_configurations_1 = require("./claude_configurations");
+const anthropic_1 = require("@langchain/anthropic");
+const chains_1 = require("langchain/chains");
+const readline = __importStar(require("readline"));
+const ANTHROPIC_API_KEY = process.env['ANTHROPIC_API_KEY'];
 dotenv.config();
-const anthropic = new sdk_1.default({
-    apiKey: process.env['ANTHROPIC_API_KEY'], // This is the default and can be omitted
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
 });
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const chat = { role: 'user', content: '왜지?' };
-        history_1.History.add(chat);
-        const message = yield anthropic.messages.create({
-            max_tokens: 1024,
-            messages: history_1.History.get(),
-            model: 'claude-3-opus-20240229',
+        const model = new anthropic_1.ChatAnthropic({
+            temperature: claude_configurations_1.Configurations.temperature,
+            modelName: "claude-3-opus-20240229",
+            anthropicApiKey: ANTHROPIC_API_KEY,
+            maxTokens: claude_configurations_1.Configurations.maxTokens,
         });
-        //add response to history role : '
-        console.log(message.content);
+        const chain = new chains_1.ConversationChain({ llm: model });
+        function promptUser() {
+            return __awaiter(this, void 0, void 0, function* () {
+                rl.question('User: ', (input) => __awaiter(this, void 0, void 0, function* () {
+                    if (input.toLowerCase() === 'exit') {
+                        rl.close();
+                        return;
+                    }
+                    const response = yield chain.call({ input });
+                    console.log('Assistant:', response.response);
+                    promptUser();
+                }));
+            });
+        }
+        console.log('대화를 시작합니다. 종료하려면 "exit"을 입력하세요.');
+        promptUser();
     });
 }
 main();

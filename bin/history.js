@@ -9,6 +9,9 @@ class History {
     static get() {
         return this.history;
     }
+    static printHistory() {
+        console.log(JSON.stringify(this.history, null, 2));
+    }
 }
 exports.History = History;
 History.history = [];

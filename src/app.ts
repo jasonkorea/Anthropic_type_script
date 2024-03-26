@@ -3,25 +3,42 @@ import { Configurations } from './claude_configurations';
 
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ConversationChain } from 'langchain/chains';
+import * as readline from 'readline';
 
-const API_KEY = process.env['ANTHROPIC_API_KEY'];
+const ANTHROPIC_API_KEY = process.env['ANTHROPIC_API_KEY'];
 dotenv.config();
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
 
 async function main() {
     const model = new ChatAnthropic({
-        temperature: 0.9,
+        temperature: Configurations.temperature,
         modelName: "claude-3-opus-20240229",
-        anthropicApiKey: API_KEY,
+        anthropicApiKey: ANTHROPIC_API_KEY,
         maxTokens: Configurations.maxTokens,
     });
 
     const chain = new ConversationChain({ llm: model });
 
-    const response1 = await chain.call({ input: "지구는 왜 둥글지?" });
-    console.log(response1.response);
-
-    const response2 = await chain.call({ input: "세모 모양이라면 어떤 현상이 일어날까?" });
-    console.log(response2.response);
+    async function promptUser() {
+        rl.question('User: ', async (input) => {
+          if (input.toLowerCase() === 'exit') {
+            rl.close();
+            return;
+          }
+    
+          const response = await chain.call({ input });
+          console.log('Assistant:', response.response);
+    
+          promptUser();
+        });
+      }
+    
+      console.log('대화를 시작합니다. 종료하려면 "exit"을 입력하세요.');
+    promptUser();
 }
 
 main();
