@@ -15,15 +15,12 @@ async function main() {
       }
 
       console.log('Assistant:');
-      let isFirstToken = true;
+
       const response = await chain.call(
         { input },
         [
           {
             handleLLMNewToken(token: string) {
-              if (isFirstToken) {
-                isFirstToken = false;
-              }
               process.stdout.write(token);
             },
           },
